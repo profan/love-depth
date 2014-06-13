@@ -16,7 +16,7 @@ Chunk = Class {}
 function Chunk:init(chunkdata, world)
 	self.world = world
 	self.blocks = deepcopy(chunkdata)
-	self.batch = love.graphics.newSpriteBatch(spritesheet, 6000)
+	self.batch = love.graphics.newSpriteBatch(spritesheet, 10000)
 	self.faces = {}
 end
 

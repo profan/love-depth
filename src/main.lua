@@ -56,10 +56,10 @@ function setup_game()
 	screen_h = love.graphics.getHeight()
 
 	-- camera setup
-	cam = Camera(0, 0)
+	cam = Camera(7500, 0)
 	
 	-- world related
-	world = World("Overworld", 24, 24)
+	world = World("Overworld", 12, 12)
 	
 	-- setup stuff
 	setup_tiles()
@@ -105,6 +105,10 @@ function draw_world()
 	world:draw()
 end
 
+function draw_highlight()
+	
+end
+
 -- end of game related functions/vars -
 ---------------------------------------
 
@@ -126,7 +130,10 @@ function love.load()
 end
 
 function love.draw()
-	cam:draw(draw_world)
+	cam:attach()
+	draw_world()
+	draw_highlight()
+	cam:detach()
 	draw_debug()
 end
 
@@ -141,7 +148,6 @@ function love.update(dt)
 	-- mouse stuff
 	if love.mouse.isDown("x1") then cam:zoom(1.25) end
 	if love.mouse.isDown("m") then cam:zoomTo(1) end
-	if love.mouse.isDown("r") then cam:zoomTo(0.01) end
 	if love.mouse.isDown("x2") then cam:zoom(0.75) end
 	
 	Timer.update(dt)

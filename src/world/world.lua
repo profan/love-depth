@@ -29,7 +29,7 @@ function World:make_chunk()
 	local block = 0
 	for y = 1, chunk_size do
 		chunk[y] = {}
-		for z = 1, 32 do
+		for z = 1, 64 do
 			chunk[y][z] = {}
 			for x = 1, chunk_size do
 				block = (z == 1 and 2) or (z > 14 and 3) or 1
