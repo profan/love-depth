@@ -1,0 +1,21 @@
+#Binaries
+bin/*
+
+#Intermediate objects
+obj/*
+*.o
+
+#Shell scripts
+*.sh
+
+#Vim swap files
+.*.s??
+
+#Debugging stuff
+*.log
+*.gch
+core
+
+#Tup related
+tup.config
+.tup/*
