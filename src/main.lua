@@ -114,6 +114,7 @@ end
 
 function setup_tilemap()
 	world:generate()
+	world:rebuild()
 	--for i, v in pairs(deepcopy(chunk)) do
 	--	table.insert(tilemap, v[1])
 	--end
@@ -165,10 +166,10 @@ end
 function love.update(dt)
 	
 	-- keyboard movement
-	if love.keyboard.isDown("up") then cam:move(0, -2) end
-	if love.keyboard.isDown("down") then cam:move(0, 2) end
-	if love.keyboard.isDown("left") then cam:move(-2, 0) end
-	if love.keyboard.isDown("right") then cam:move(2, 0) end
+	if love.keyboard.isDown("up") then cam:move(0, -5) end
+	if love.keyboard.isDown("down") then cam:move(0, 5) end
+	if love.keyboard.isDown("left") then cam:move(-5, 0) end
+	if love.keyboard.isDown("right") then cam:move(5, 0) end
 	
 	-- mouse stuff
 	if love.mouse.isDown("x1") then cam:zoom(1.25) end

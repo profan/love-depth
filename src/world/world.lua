@@ -42,8 +42,17 @@ function World:generate()
 	for y = 1, self.height do
 		chunks[y] = {}
 		for x = 1, self.width do
-			chk = Chunk(newchunk)
+			chk = Chunk(newchunk, self)
 			table.insert(chunks[y], x, chk) --inserts into chunk coord y, x with chunk newchunk
+		end
+	end
+end
+
+function World:rebuild()
+	local chunks = self.chunks
+	for y = 1, #chunks do
+		for x = #chunks[y], 1, -1 do
+			chunks[y][x]:rebuild()
 		end
 	end
 end
@@ -73,7 +82,11 @@ function World:draw()
 end
 
 function World:block(x, y, z)
-	
+	local c_x = math.floor(x / chunk_size)
+	local c_y = math.floor(y / chunk_size)
+	local o_x = x % chunk_size
+	local o_y = y % chunk_size
+	return self.chunks[c_y][c_x].blocks[o_y][z][o_x]
 end
 
 function World:chunk(x, y)
