@@ -23,6 +23,8 @@ end
 ---------------------------------------
 -- hump libraries here ----------------
 
+require("cupid.debug")
+Timer = require "hump.timer"
 Vector = require "hump.vector"
 Camera = require "hump.camera"
 WorldInc = require "world.world"
@@ -57,7 +59,7 @@ function setup_game()
 	cam = Camera(0, 0)
 	
 	-- world related
-	world = World("Overworld", 1, 1)
+	world = World("Overworld", 2, 2)
 	
 	-- setup stuff
 	setup_tiles()
@@ -141,6 +143,8 @@ function love.update(dt)
 	if love.mouse.isDown("m") then cam:zoomTo(1) end
 	if love.mouse.isDown("r") then cam:zoomTo(0.01) end
 	if love.mouse.isDown("x2") then cam:zoom(0.75) end
+	
+	Timer.update(dt)
 	
 end
 

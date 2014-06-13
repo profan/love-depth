@@ -8,7 +8,6 @@ local chunk_size = 32
 -- end of placeholders ----------------
 ---------------------------------------
 
-
 Class = require "hump.class"
 
 World = Class {}
