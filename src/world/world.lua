@@ -1,6 +1,8 @@
 ---------------------------------------
 -- temporary placeholders for chunk ---
 
+local tile_width = 32
+local tile_height = 16
 local chunk_size = 16
 
 -- end of placeholders ----------------
@@ -68,12 +70,8 @@ function World:draw()
 	local chunks = self.chunks
 	for y = 1, #chunks do
 		for x = #chunks[y], 1, -1 do
-			local o_x = ((x * (chunk_size*32)/ 2) + (y * (chunk_size*32) / 2))
-			local o_y = ((y * (chunk_size*16) / 2) - (x * (chunk_size*16) / 2))
-			-- local o_x = (x * chunk_size * 32) --- (chunk_size * 32)
-			-- local o_y = (y * chunk_size * 16)
-			--local d_x = (x * tile_width / 2) + (y * tile_width / 2)
-			--local d_y = (y * tile_height / 2) - (x * tile_height / 2)
+			local o_x = ((x * (chunk_size*tile_width)/ 2) + (y * (chunk_size*tile_width) / 2))
+			local o_y = ((y * (chunk_size*tile_height) / 2) - (x * (chunk_size*tile_height) / 2))
 			chunks[y][x]:draw(o_x, o_y)
 		end
 	end
