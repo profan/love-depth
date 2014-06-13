@@ -1,26 +1,7 @@
 ---------------------------------------
 -- temporary placeholders for chunk ---
 
-local newchunk = { -- y, z, x stored
-		{
-			{2,2,2,2}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, 
-			{3,3,3,3}, {3,3,3,3}, {3,3,3,3}, {3,3,3,3}, {3,3,3,3}, {3,3,3,3}, {3,3,3,3}, {3,3,3,3},
-		},
-		{
-			{2,2,2,2}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, 
-			{3,3,3,3}, {3,3,3,3}, {3,3,3,3}, {3,3,3,3}, {3,3,3,3}, {3,3,3,3}, {3,3,3,3}, {3,3,3,3}
-		},
-		{
-			{2,2,2,2}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, 
-			{3,3,3,3}, {3,3,3,3}, {3,3,3,3}, {3,3,3,3}, {3,3,3,3}, {3,3,3,3}, {3,3,3,3}, {3,3,3,3} 
-		},
-		{
-			{2,2,2,2}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, 
-			{3,3,3,3}, {3,3,3,3}, {3,3,3,3}, {3,3,3,3}, {3,3,3,3}, {3,3,3,3}, {3,3,3,3}, {3,3,3,3},
-		}
-}
-
-local chunk_size = 4
+local chunk_size = 16
 
 -- end of placeholders ----------------
 ---------------------------------------
@@ -37,12 +18,29 @@ function World:init(name, width, height)
 	self.height = height
 end
 
+function World:make_chunk()
+	local chunk = {}
+	local block = 0
+	for y = 1, chunk_size do
+		chunk[y] = {}
+		for z = 1, 32 do
+			chunk[y][z] = {}
+			for x = 1, chunk_size do
+				block = (z == 1 and 2) or (z > 14 and 3) or 1
+				chunk[y][z][x] = block
+			end
+		end
+	end
+	return chunk
+end
+
 function World:generate()
 	local chunks = self.chunks
+	local c = self:make_chunk()
 	for y = 1, self.height do
 		chunks[y] = {}
 		for x = 1, self.width do
-			chk = Chunk(newchunk, self)
+			chk = Chunk(c, self)
 			table.insert(chunks[y], x, chk) --inserts into chunk coord y, x with chunk newchunk
 		end
 	end
