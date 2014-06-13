@@ -3,7 +3,7 @@
 
 local tile_width = 32
 local tile_height = 16
-local chunk_size = 16
+local chunk_size = 32
 
 -- end of placeholders ----------------
 ---------------------------------------
@@ -18,6 +18,11 @@ function World:init(name, width, height)
 	self.name = name
 	self.width = width
 	self.height = height
+	
+	-- stats
+	self.total_blocks = 0
+	self.total_chunks = 0
+	self.total_active = 0
 end
 
 function World:make_chunk()
@@ -44,6 +49,9 @@ function World:generate()
 		for x = 1, self.width do
 			chk = Chunk(c, self)
 			table.insert(chunks[y], x, chk) --inserts into chunk coord y, x with chunk newchunk
+			self.total_chunks = self.total_chunks + 1
+			self.total_blocks = self.total_blocks + 32768
+			self.total_active = self.total_blocks
 		end
 	end
 end
@@ -52,7 +60,9 @@ function World:rebuild()
 	local chunks = self.chunks
 	for y = 1, #chunks do
 		for x = #chunks[y], 1, -1 do
-			chunks[y][x]:rebuild()
+			local o_x = ((x * (chunk_size*tile_width)/ 2) + (y * (chunk_size*tile_width) / 2))
+			local o_y = ((y * (chunk_size*tile_height) / 2) - (x * (chunk_size*tile_height) / 2))
+			chunks[y][x]:rebuild(o_x, o_y)
 		end
 	end
 end
@@ -70,9 +80,7 @@ function World:draw()
 	local chunks = self.chunks
 	for y = 1, #chunks do
 		for x = #chunks[y], 1, -1 do
-			local o_x = ((x * (chunk_size*tile_width)/ 2) + (y * (chunk_size*tile_width) / 2))
-			local o_y = ((y * (chunk_size*tile_height) / 2) - (x * (chunk_size*tile_height) / 2))
-			chunks[y][x]:draw(o_x, o_y)
+			chunks[y][x]:draw()
 		end
 	end
 end
@@ -90,5 +98,5 @@ function World:chunk(x, y)
 end
 
 function World:stats()
-	return #self.chunks
+	return self.total_chunks, self.total_blocks, self.total_active
 end

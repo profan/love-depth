@@ -57,7 +57,7 @@ function setup_game()
 	cam = Camera(0, 0)
 	
 	-- world related
-	world = World("Overworld", 2, 2)
+	world = World("Overworld", 1, 1)
 	
 	-- setup stuff
 	setup_tiles()
@@ -90,8 +90,13 @@ end
 
 function draw_debug()
 	local lg = love.graphics
+	local chunks, blocks, active = world:stats()
+	
 	lg.setColor(color_white)
 	lg.print("FPS: " .. love.timer.getFPS(), 800, 32)
+	lg.print("Chunks: " .. chunks, 800, 48)
+	lg.print("Blocks: " .. blocks, 800, 64)
+	lg.print("Active blocks: " .. active, 800, 80)
 end
 
 function draw_world()
