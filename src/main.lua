@@ -35,12 +35,6 @@ BlockInc = require "world.block"
 ---------------------------------------
 -- game related functions/variables ---
 
-local otherchunk = { -- y, x, z stored
-	{
-		{2, 2, 2, 2}
-	},
-}
-
 local chunk = { -- y, z, x stored
 	{
 		{
@@ -69,8 +63,7 @@ local tilemap = {
 	-- { {0,0,0,0}, {0,0,0,2}, {0,2,2,1}, {2,1,3,3}, {1,3,3,3}, {3,3,3,3}, {3,3,3,3}, {3,3,3,3}  },
 }
 
-local spritesheet
-local blocks = {}
+blocks = {}
 local chunk_size = 4
 
 -- generic
@@ -93,7 +86,7 @@ function setup_game()
 	cam = Camera(0, 0)
 	
 	-- world related
-	world = World("Overworld")
+	world = World("Overworld", 6, 6)
 	
 	-- setup stuff
 	setup_tiles()
@@ -120,9 +113,10 @@ function setup_tiles()
 end
 
 function setup_tilemap()
-	for i, v in pairs(deepcopy(chunk)) do
-		table.insert(tilemap, v[1])
-	end
+	world:generate()
+	--for i, v in pairs(deepcopy(chunk)) do
+	--	table.insert(tilemap, v[1])
+	--end
 	-- local map_height = 64 / chunk_size
 	-- local map_width = 64 / chunk_size
 	-- for y = 1, map_height do
@@ -140,21 +134,7 @@ function draw_debug()
 end
 
 function draw_world()
-	local tmp = tilemap
-	local lg = love.graphics
-	for y = 1, #tmp do
-		for z = #tmp[y], 1, -1 do
-			for x = #tmp[y][z], 1, -1 do
-				local t_x = (x * tile_width / 2) + (y * tile_width / 2)
-				local t_y = (y * tile_height / 2) - (x * tile_height / 2) + (z * tile_height)
-				
-				local block = blocks[tmp[y][z][x]] or 0
-				if block ~= 0 then
-					lg.draw(spritesheet, block, t_x, t_y)
-				end
-			end
-		end
-	end 
+	world:draw()
 end
 
 -- end of game related functions/vars -
@@ -185,10 +165,10 @@ end
 function love.update(dt)
 	
 	-- keyboard movement
-	if love.keyboard.isDown("up") then cam:move(0, -1) end
-	if love.keyboard.isDown("down") then cam:move(0, 1) end
-	if love.keyboard.isDown("left") then cam:move(-1, 0) end
-	if love.keyboard.isDown("right") then cam:move(1, 0) end
+	if love.keyboard.isDown("up") then cam:move(0, -2) end
+	if love.keyboard.isDown("down") then cam:move(0, 2) end
+	if love.keyboard.isDown("left") then cam:move(-2, 0) end
+	if love.keyboard.isDown("right") then cam:move(2, 0) end
 	
 	-- mouse stuff
 	if love.mouse.isDown("x1") then cam:zoom(1.25) end
