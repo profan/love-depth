@@ -59,7 +59,7 @@ function setup_game()
 	cam = Camera(0, 0)
 	
 	-- world related
-	world = World("Overworld", 2, 2)
+	world = World("Overworld", 16, 16)
 	
 	-- setup stuff
 	setup_tiles()
