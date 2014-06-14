@@ -83,6 +83,11 @@ function setup_tiles()
 			tile_cell, tile_cell,
 			512, 512 -- width of sheet
 	)
+	blocks[4] = love.graphics.newQuad( -- selector
+			tile_cell*4, tile_cell*6, -- position in tilemap
+			tile_cell, tile_cell,
+			512, 512 -- width of sheet
+	)
 end
 
 function setup_tilemap()
@@ -106,7 +111,10 @@ function draw_world()
 end
 
 function draw_highlight()
-	
+	local x, y = cam:worldCoords(love.mouse.getPosition())
+	x = math.floor(x / tile_width) * tile_width
+	y = math.floor(y / tile_height) * tile_height
+	love.graphics.draw(spritesheet, blocks[4], x, y)
 end
 
 -- end of game related functions/vars -
