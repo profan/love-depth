@@ -100,10 +100,13 @@ function draw_debug()
 	local chunks, blocks, active = world:stats()
 	
 	lg.setColor(color_white)
-	lg.print("FPS: " .. love.timer.getFPS(), 800, 32)
-	lg.print("Chunks: " .. chunks, 800, 48)
-	lg.print("Blocks: " .. blocks, 800, 64)
-	lg.print("Active blocks: " .. active, 800, 80)
+	lg.push()
+	lg.translate(800, 32)
+	lg.print("FPS: " .. love.timer.getFPS(), 0, 16)
+	lg.print("Chunks: " .. chunks, 0, 32)
+	lg.print("Blocks: " .. blocks, 0, 48)
+	lg.print("Active blocks: " .. active, 0, 64)
+	lg.pop()
 end
 
 function draw_world()
