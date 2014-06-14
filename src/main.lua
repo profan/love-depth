@@ -58,6 +58,7 @@ function setup_game()
 	-- camera setup
 	cam = Camera(7500, 0)
 	
+	
 	-- world related
 	world = World("Overworld", 12, 12)
 	
@@ -114,10 +115,14 @@ function draw_world()
 end
 
 function draw_highlight()
-	local x, y = cam:worldCoords(love.mouse.getPosition())
-	x = math.floor(x / tile_width) * tile_width
-	y = math.floor(y / tile_height) * tile_height
+	local x, y = world_to_grid(cam:worldCoords(love.mouse.getPosition()))
 	love.graphics.draw(spritesheet, blocks[4], x, y)
+end
+
+function world_to_grid(x, y)
+	local n_x = math.floor(x / tile_width) * tile_width
+	local n_y = math.floor(y / tile_height) * tile_height
+	return n_x, n_y
 end
 
 -- end of game related functions/vars -
@@ -165,8 +170,12 @@ function love.update(dt)
 	
 end
 
-function love.mousepressed(x, y, button)
+function love.keypressed(key)
+	
+end
 
+function love.mousepressed(x, y, button)
+	
 end
 
 -- end of love functions/vars ---------

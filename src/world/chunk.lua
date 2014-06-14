@@ -51,7 +51,7 @@ function Chunk:rebuild(offsetx, offsety)
 				end
 				
 				if faces ~= 6 then
-					local block = block_types[cur_block] or 0
+					local block = block_types[cur_block] or block_types[0]
 					local t_x = ((x * tile_width / 2) + (y * tile_width / 2)) + offsetx
 					local t_y = ((y * tile_height / 2) - (x * tile_height / 2) + offsety) + (z * tile_height)
 					self.batch:add(block, t_x, t_y, 0, 1, 1, 0, 0, 0, 0)
