@@ -9,6 +9,7 @@ local chunk_size = 32
 ---------------------------------------
 
 Class = require "hump.class"
+lovenoise = require "lovenoise"
 
 World = Class {}
 
@@ -24,15 +25,38 @@ function World:init(name, width, height)
 	self.total_active = 0
 end
 
-function World:make_chunk()
+function World:make_noise()
+	local testNoise = lovenoise.newNoise(
+    --                       {"fractal", 100, {6, 0.7, 1.4}},
+                           {"simplex", 128}
+                       )
+	--testNoise:setthreshold(0.2):setseed(1337)
+	testNoise:setseed(1337)
+	return testNoise
+end
+
+function World:make_chunk(cx, cy)
+	local noise = self:make_noise()
 	local chunk = {}
 	local block = 0
+	local top
 	for y = 1, chunk_size do
 		chunk[y] = {}
 		for z = 1, 64 do
 			chunk[y][z] = {}
 			for x = 1, chunk_size do
-				block = (z == 1 and 2) or (z > 14 and 3) or 1
+				lastz = lastz or 0
+				topdrawn = topdrawn or false
+				if z ~= lastz then
+					top = math.floor(64.0 * noise:eval((cx*chunk_size) + x, (cy*chunk_size) + y))
+					print("Z: " .. top)
+					topdrawn = false
+				end
+				block = (z == top and 2) or (z > 14 and 3 and topdrawn) or (z < top and 1 and topdrawn) or 0
+				if z == top then
+					topdrawn = true
+				end
+				--block = (z == 1 and 2) or (z > 14 and 3) or 1
 				chunk[y][z][x] = block
 			end
 		end
@@ -42,10 +66,11 @@ end
 
 function World:generate()
 	local chunks = self.chunks
-	local c = self:make_chunk()
+	local c
 	for y = 1, self.height do
 		chunks[y] = {}
 		for x = 1, self.width do
+			c = self:make_chunk(x, y)
 			chk = Chunk(c, self)
 			table.insert(chunks[y], x, chk) --inserts into chunk coord y, x with chunk newchunk
 			self.total_chunks = self.total_chunks + 1

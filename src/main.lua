@@ -60,7 +60,7 @@ function setup_game()
 	
 	
 	-- world related
-	world = World("Overworld", 12, 12)
+	world = World("Overworld", 8, 8)
 	
 	-- setup stuff
 	setup_tiles()
