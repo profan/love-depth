@@ -60,7 +60,7 @@ function setup_game()
 	
 	
 	-- world related
-	world = World("Overworld", 8, 8)
+	world = World("Overworld", 4, 4)
 	
 	-- setup stuff
 	setup_tiles()
@@ -125,6 +125,17 @@ function world_to_grid(x, y)
 	return n_x, n_y
 end
 
+function explode()
+	for x = 1, 64 do
+		for y = 1, 64 do
+			for z = 1, 64 do
+				world:set_block(x, y, z, 0)
+			end
+		end
+	end
+	world:rebuild()
+end
+
 -- end of game related functions/vars -
 ---------------------------------------
 
@@ -163,6 +174,7 @@ function love.update(dt)
 	
 	-- mouse stuff
 	if love.mouse.isDown("x1") then cam:zoom(1.25) end
+	if love.mouse.isDown("l") then explode() end
 	if love.mouse.isDown("m") then cam:zoomTo(1) end
 	if love.mouse.isDown("x2") then cam:zoom(0.75) end
 	

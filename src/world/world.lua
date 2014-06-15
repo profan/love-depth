@@ -1,6 +1,8 @@
 ---------------------------------------
 -- temporary placeholders for chunk ---
 
+local function istable(t) return type(t) == 'table' end
+
 local tile_width = 32
 local tile_height = 16
 local chunk_size = 32
@@ -84,23 +86,30 @@ function World:generate()
 	local time_taken = love.timer.getTime() - stime
 	local total_chunks = self.height*self.width
 	print("It took: " .. time_taken .. " seconds to build " .. total_chunks .. " chunks.")
-	print("Seconds per chunk: " .. time_taken/total_chunks)
+	print(" - Seconds per chunk: " .. time_taken/total_chunks)
+end
+
+function World:rebuild_chunk(x, y)
+	local o_x = ((x * (chunk_size*tile_width)/ 2) + (y * (chunk_size*tile_width) / 2))
+	local o_y = ((y * (chunk_size*tile_height) / 2) - (x * (chunk_size*tile_height) / 2))
+	self.chunks[y][x]:rebuild(o_x, o_y)
 end
 
 function World:rebuild()
+	local total_built = 0
 	local chunks = self.chunks
 	local stime = love.timer.getTime()
 	for y = 1, #chunks do
 		for x = #chunks[y], 1, -1 do
-			local o_x = ((x * (chunk_size*tile_width)/ 2) + (y * (chunk_size*tile_width) / 2))
-			local o_y = ((y * (chunk_size*tile_height) / 2) - (x * (chunk_size*tile_height) / 2))
-			chunks[y][x]:rebuild(o_x, o_y)
+			if chunks[y][x].dirty then
+				self:rebuild_chunk(x, y)
+				total_built = total_built + 1
+			end
 		end
 	end
 	local time_taken = love.timer.getTime() - stime
-	local total_chunks = self.height*self.width
-	print("It took: " .. time_taken .. " seconds to rebuild " .. total_chunks .. " chunks spritebatches.")
-	print("Seconds per chunk: " .. time_taken/total_chunks)
+	print("It took: " .. time_taken .. " seconds to rebuild " .. total_built .. " chunks spritebatches.")
+	print(" - Seconds per chunk: " .. time_taken/total_built)
 end
 
 function World:update(dt)
@@ -122,11 +131,20 @@ function World:draw()
 end
 
 function World:block(x, y, z)
-	local c_x = math.floor(x / chunk_size)
-	local c_y = math.floor(y / chunk_size)
-	local o_x = x % chunk_size
-	local o_y = y % chunk_size
+	local c_x = math.floor(x / chunk_size)+1
+	local c_y = math.floor(y / chunk_size)+1
+	local o_x = (x % chunk_size)+1
+	local o_y = (y % chunk_size)+1
 	return self.chunks[c_y][c_x].blocks[o_y][z][o_x]
+end
+
+function World:set_block(x, y, z, v)
+	local c_x = math.floor(x / chunk_size)+1
+	local c_y = math.floor(y / chunk_size)+1
+	local o_x = (x % chunk_size)+1
+	local o_y = (y % chunk_size)+1
+	self.chunks[c_y][c_x].blocks[o_y][z][o_x] = v
+	self.chunks[c_y][c_x].dirty = true
 end
 
 function World:chunk(x, y)

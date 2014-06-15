@@ -18,6 +18,7 @@ function Chunk:init(chunkdata, world)
 	self.blocks = chunkdata
 	self.batch = love.graphics.newSpriteBatch(spritesheet, 10000)
 	self.faces = {}
+	self.dirty = true
 end
 
 function Chunk:update(dt)
@@ -72,4 +73,5 @@ function Chunk:rebuild(offsetx, offsety)
 		end
 	end
 	self.batch:unbind()
+	self.dirty = false
 end
