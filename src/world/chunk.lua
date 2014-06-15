@@ -24,7 +24,7 @@ function Chunk:update(dt)
 
 end
 
-function Chunk:draw(offsetx, offsety)
+function Chunk:draw()
 	local lg = love.graphics
 	lg.draw(self.batch)
 end

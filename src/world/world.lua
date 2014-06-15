@@ -1,6 +1,13 @@
 ---------------------------------------
 -- temporary placeholders for chunk ---
 
+function BoundingBox(bx1, by1, bx2, by2, tx, ty)
+    return  (bx2 >= tx and by2 >= ty)
+        and (bx1 <= tx and by1 <= ty)
+        or  (bx1 >= tx and by2 >= ty)
+        and (bx2 <= tx and by1 <= ty)
+end
+
 local tile_width = 32
 local tile_height = 16
 local chunk_size = 32
@@ -75,11 +82,16 @@ function World:update(dt)
 	end
 end
 
-function World:draw()
+function World:draw(x1, y1, x2, y2)
+	local c_x, c_y
 	local chunks = self.chunks
 	for y = 1, #chunks do
 		for x = #chunks[y], 1, -1 do
-			chunks[y][x]:draw()
+			c_x = (x * chunk_size) * tile_width
+			c_y = (y * chunk_size) * tile_height
+			if BoundingBox(x1, y1, x2, y2, c_x, c_y) then
+				chunks[y][x]:draw()
+			end
 		end
 	end
 end

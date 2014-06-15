@@ -60,7 +60,7 @@ function setup_game()
 	
 	
 	-- world related
-	world = World("Overworld", 12, 12)
+	world = World("Overworld", 20, 20)
 	
 	-- setup stuff
 	setup_tiles()
@@ -107,11 +107,17 @@ function draw_debug()
 	lg.print("Chunks: " .. chunks, 0, 32)
 	lg.print("Blocks: " .. blocks, 0, 48)
 	lg.print("Active blocks: " .. active, 0, 64)
+	lg.print("Top Left X: " .. x1, 0, 80)
+	lg.print("Top Left Y: " .. y1, 0, 96)
+	lg.print("Bottom Right X: " .. x2, 0, 112)
+	lg.print("Bottom Right Y: " .. y2, 0, 128)
 	lg.pop()
 end
 
 function draw_world()
-	world:draw()
+	x1, y1 = cam:worldCoords(0,0)
+	x2, y2 = cam:worldCoords(screen_w, screen_h)
+	world:draw(x1, y1, x2, y2)
 end
 
 function draw_highlight()
