@@ -27,7 +27,7 @@ end
 
 function World:make_noise()
 	local testNoise = lovenoise.newNoise(
-    --                       {"fractal", 100, {6, 0.7, 1.4}},
+                           {"fractal", 100, {6, 0.7, 1.4}},
                            {"simplex", 128}
                        )
 	--testNoise:setthreshold(0.2):setseed(1337)
