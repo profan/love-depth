@@ -18,6 +18,7 @@ function World:init(name, width, height)
 	self.name = name
 	self.width = width
 	self.height = height
+	self.noise = self:make_noise()
 	
 	-- stats
 	self.total_blocks = 0
@@ -26,20 +27,21 @@ function World:init(name, width, height)
 end
 
 function World:make_noise()
-	local testNoise = lovenoise.newNoise(
+	local test_noise = lovenoise.newNoise(
                            {"fractal", 100, {6, 0.7, 1.4}},
                            {"simplex", 128}
                        )
 	--testNoise:setthreshold(0.2):setseed(1337)
-	testNoise:setseed(1337)
-	return testNoise
+	test_noise:setseed(1337)
+	return test_noise
 end
 
 function World:make_chunk(cx, cy)
-	local noise = self:make_noise()
+	local noise = self.noise
 	local chunk = {}
 	local block = 0
-	local top
+	local top, topdrawn, lastz
+	local ceil = math.ceil
 	for y = 1, chunk_size do
 		chunk[y] = {}
 		for z = 1, 64 do
@@ -48,8 +50,8 @@ function World:make_chunk(cx, cy)
 				lastz = lastz or 0
 				topdrawn = topdrawn or false
 				if z ~= lastz then
-					top = math.floor(64.0 * noise:eval((cx*chunk_size) + x, (cy*chunk_size) + y))
-					print("Z: " .. top)
+					top = ceil(64.0 * noise:eval((cx*chunk_size) + x, (cy*chunk_size) + y))
+					--print("Z: " .. top)
 					topdrawn = false
 				end
 				block = (z == top and 2) or (z > 14 and 3 and topdrawn) or (z < top and 1 and topdrawn) or 0
@@ -65,23 +67,29 @@ function World:make_chunk(cx, cy)
 end
 
 function World:generate()
-	local chunks = self.chunks
 	local c
+	local chunks = self.chunks
+	local stime = love.timer.getTime()
 	for y = 1, self.height do
 		chunks[y] = {}
 		for x = 1, self.width do
 			c = self:make_chunk(x, y)
 			chk = Chunk(c, self)
-			table.insert(chunks[y], x, chk) --inserts into chunk coord y, x with chunk newchunk
+			chunks[y][x] = chk
 			self.total_chunks = self.total_chunks + 1
 			self.total_blocks = self.total_blocks + 32768
 			self.total_active = self.total_blocks
 		end
 	end
+	local time_taken = love.timer.getTime() - stime
+	local total_chunks = self.height*self.width
+	print("It took: " .. time_taken .. " seconds to build " .. total_chunks .. " chunks.")
+	print("Seconds per chunk: " .. time_taken/total_chunks)
 end
 
 function World:rebuild()
 	local chunks = self.chunks
+	local stime = love.timer.getTime()
 	for y = 1, #chunks do
 		for x = #chunks[y], 1, -1 do
 			local o_x = ((x * (chunk_size*tile_width)/ 2) + (y * (chunk_size*tile_width) / 2))
@@ -89,6 +97,10 @@ function World:rebuild()
 			chunks[y][x]:rebuild(o_x, o_y)
 		end
 	end
+	local time_taken = love.timer.getTime() - stime
+	local total_chunks = self.height*self.width
+	print("It took: " .. time_taken .. " seconds to rebuild " .. total_chunks .. " chunks spritebatches.")
+	print("Seconds per chunk: " .. time_taken/total_chunks)
 end
 
 function World:update(dt)

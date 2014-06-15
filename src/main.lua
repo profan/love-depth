@@ -56,7 +56,7 @@ function setup_game()
 	screen_h = love.graphics.getHeight()
 
 	-- camera setup
-	cam = Camera(7500, 0)
+	cam = Camera(5000, 0)
 	
 	
 	-- world related
