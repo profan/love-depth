@@ -29,7 +29,8 @@ function Chunk:draw(offsetx, offsety)
 	lg.draw(self.batch)
 end
 
-function Chunk:rebuild(offsetx, offsety)
+function Chunk:rebuild(offsetx, offsety, cx, cy)
+	local w = self.world
 	local tmp = self.blocks
 	local block_types = blocks
 	self.batch:bind()
@@ -39,15 +40,25 @@ function Chunk:rebuild(offsetx, offsety)
 			for x = #tmp[y][z], 1, -1 do
 				local faces = 0
 				local cur_block = tmp[y][z][x]
-				if z-1 ~= 0 		 	and tmp[y][z-1][x] ~= 0 then faces = faces+1 end -- above
-				if z+1 ~= #tmp[y]+1	 	and tmp[y][z+1][x] ~= 0 then faces = faces+1 end -- below
-				if x-1 ~= 0 		 	and tmp[y][z][x-1] ~= 0 then faces = faces+1 end -- left of
-				if x+1 ~= #tmp[y][z]+1 	and tmp[y][z][x+1] ~= 0 then faces = faces+1 end -- right of
-				if y-1 ~= 0 		 	and tmp[y-1][z][x] ~= 0 then faces = faces+1 end -- in front
-				if y+1 ~= #tmp+1 		and tmp[y+1][z][x] ~= 0 then faces = faces+1 end -- behind
+				local c_x = math.floor(cx * chunk_size)
+				local c_y = math.floor(cy * chunk_size)
 				
+				print("X: " .. c_x)
+				print("Y: " .. c_y)
+				
+				if z-1 ~= 0 		 	and w:block(c_x, c_y, z-1) ~= 0 then faces = faces+1 end -- above				
+				if z+1 ~= #tmp[y]+1 	and w:block(c_x, c_y, z+1) ~= 0 then faces = faces+1 end -- below			
+				if x-1 ~= 0 		 	and w:block(c_x-1, c_y, z) ~= 0 then faces = faces+1 end -- left of
+				if x+1 ~= #tmp[y][z]+1 	and w:block(c_x+1, c_y, z) ~= 0 then faces = faces+1 end -- right of
+				if y-1 ~= 0 		 	and w:block(c_x, c_y-1, z) ~= 0 then faces = faces+1 end -- in front
+				if y+1 ~= #tmp+1 		and w:block(c_x, c_y+1, z) ~= 0 then faces = faces+1 end -- behind
+				
+				-- if z-1 ~= 0 		 	and tmp[y][z-1][x] ~= 0 then faces = faces+1 end -- above
+				-- if z+1 ~= #tmp[y]+1	 	and tmp[y][z+1][x] ~= 0 then faces = faces+1 end -- below
+				-- if x-1 ~= 0 		 	and tmp[y][z][x-1] ~= 0 then faces = faces+1 end -- left of
+				-- if x+1 ~= #tmp[y][z]+1 	and tmp[y][z][x+1] ~= 0 then faces = faces+1 end -- right of
 				if faces == 6 then
-					self.world.total_active = self.world.total_active - 1
+					w.total_active = w.total_active - 1
 				end
 				
 				if faces ~= 6 then

@@ -61,7 +61,7 @@ function World:rebuild()
 		for x = #chunks[y], 1, -1 do
 			local o_x = ((x * (chunk_size*tile_width)/ 2) + (y * (chunk_size*tile_width) / 2))
 			local o_y = ((y * (chunk_size*tile_height) / 2) - (x * (chunk_size*tile_height) / 2))
-			chunks[y][x]:rebuild(o_x, o_y)
+			chunks[y][x]:rebuild(o_x, o_y, x, y)
 		end
 	end
 end
