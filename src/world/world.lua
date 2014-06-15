@@ -105,7 +105,7 @@ function World:block(x, y, z)
 end
 
 function World:chunk(x, y)
-	
+	return self.chunks[y][x]
 end
 
 function World:stats()
