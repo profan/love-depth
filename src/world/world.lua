@@ -42,23 +42,27 @@ function World:make_chunk(cx, cy)
 	local noise = self.noise
 	local chunk = {}
 	local block = 0
-	local top, topdrawn, lastz
+	local top, topdrawn
 	local ceil = math.ceil
-	for y = 1, chunk_size do
+	
+	local heights = {}
+	for y = 1, chunk_size  do
 		chunk[y] = {}
 		for z = 1, 64 do
 			chunk[y][z] = {}
 			for x = 1, chunk_size do
-				lastz = lastz or 0
-				topdrawn = topdrawn or false
-				if z ~= lastz then
-					top = ceil(64.0 * noise:eval((cx*chunk_size) + x, (cy*chunk_size) + y))
-					--print("Z: " .. top)
-					topdrawn = false
+				top = ceil(64.0 * noise:eval((cx*chunk_size) + x, (cy*chunk_size) + y))
+				--print("Z: " .. top)
+				
+				if heights[x] ~= nil and heights[x] < z then
+					block = (z == top and 2) or (z > heights[x]+14 and 3) or 1
+				else
+					block = 0
 				end
-				block = (z == top and 2) or (z > 14 and 3 and topdrawn) or (z < top and 1 and topdrawn) or 0
+				
 				if z == top then
-					topdrawn = true
+					block = 2
+					heights[x] = top
 				end
 				--block = (z == 1 and 2) or (z > 14 and 3) or 1
 				chunk[y][z][x] = block
@@ -126,6 +130,7 @@ function World:draw()
 	for y = 1, #chunks do
 		for x = #chunks[y], 1, -1 do
 			chunks[y][x]:draw()
+			
 		end
 	end
 end
