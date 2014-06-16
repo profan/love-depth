@@ -13,7 +13,7 @@ local chunk_size = 32
 Class = require "hump.class"
 lovenoise = require "lovenoise"
 
-World = Class {}
+local World = Class {}
 
 function World:init(name, width, height)
 	self.chunks = {}
@@ -159,3 +159,5 @@ end
 function World:stats()
 	return self.total_chunks, self.total_blocks, self.total_active
 end
+
+return World

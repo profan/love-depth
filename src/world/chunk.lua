@@ -11,7 +11,7 @@ local chunk_size = 32
 
 Class = require "hump.class"
 
-Chunk = Class {}
+local Chunk = Class {}
 
 function Chunk:init(chunkdata, world)
 	self.world = world
@@ -75,3 +75,5 @@ function Chunk:rebuild(offsetx, offsety)
 	self.batch:unbind()
 	self.dirty = false
 end
+
+return Chunk

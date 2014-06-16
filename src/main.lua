@@ -27,9 +27,9 @@ require("cupid.debug")
 Timer = require "hump.timer"
 Vector = require "hump.vector"
 Camera = require "hump.camera"
-WorldInc = require "world.world"
-ChunkInc = require "world.chunk"
-BlockInc = require "world.block"
+World = require "world.world"
+Chunk = require "world.chunk"
+Block = require "world.block"
 
 -- end of hump library includes ------
 ---------------------------------------
@@ -60,7 +60,7 @@ function setup_game()
 	
 	
 	-- world related
-	world = World("Overworld", 4, 4)
+	world = World("Overworld", 10, 10)
 	
 	-- setup stuff
 	setup_tiles()
