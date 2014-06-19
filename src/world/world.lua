@@ -6,7 +6,7 @@ local function istable(t) return type(t) == 'table' end
 local tile_width = 32
 local tile_height = 16
 local chunk_size = 32
-local chunk_height = 128
+local chunk_height = 64
 
 -- end of placeholders ----------------
 ---------------------------------------
@@ -51,14 +51,15 @@ function World:cave_noise()
 end
 
 function World:make_whole_chunk(cx, cy)
-	c, h = self:make_chunk(cx, cy)
-	self:make_caves(c, h, cx, cy)
-	return c
+	local chunk = {}
+	heights = self:make_chunk(chunk, cx, cy)
+	self:make_caves(chunk, heights, cx, cy)
+	return chunk
 end
 
-function World:make_chunk(cx, cy)
+function World:make_chunk(c, cx, cy)
 	local noise = self.noise
-	local chunk = {}
+	local chunk = c
 	local block = 0
 	local top, topdrawn
 	local ceil = math.ceil
@@ -87,7 +88,7 @@ function World:make_chunk(cx, cy)
 			end
 		end
 	end
-	return chunk, heights
+	return heights
 end
 
 function World:make_caves(c, h, cx, cy)
@@ -112,6 +113,18 @@ end
 
 function World:make_rivers(c, cx, cy)
 
+end
+
+function World:make_sea(c, cx, cy)
+	for y = 1, chunk_size  do
+		for z = 1, chunk_height do
+			for x = 1, chunk_size do
+				if z < 64 and z > 15 and c[y][z][x] == 0 then
+					c[y][z][x] = 5
+				end
+			end
+		end
+	end
 end
 
 function World:generate()

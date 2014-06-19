@@ -89,6 +89,11 @@ function setup_tiles()
 			tile_cell, tile_cell,
 			512, 512 -- width of sheet
 	)
+	blocks[5] = love.graphics.newQuad( -- water
+			0, tile_cell*4, -- position in tilemap
+			tile_cell, tile_cell,
+			512, 512 -- width of sheet
+	)
 end
 
 function setup_tilemap()
