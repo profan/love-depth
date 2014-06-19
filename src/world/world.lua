@@ -6,6 +6,7 @@ local function istable(t) return type(t) == 'table' end
 local tile_width = 32
 local tile_height = 16
 local chunk_size = 32
+local chunk_height = 32
 
 -- end of placeholders ----------------
 ---------------------------------------
@@ -21,6 +22,7 @@ function World:init(name, width, height)
 	self.width = width
 	self.height = height
 	self.noise = self:make_noise()
+	self.cnoise = self:cave_noise()
 	
 	-- stats
 	self.total_blocks = 0
@@ -38,6 +40,22 @@ function World:make_noise()
 	return test_noise
 end
 
+function World:cave_noise()
+	local test_noise = lovenoise.newNoise(
+                           {"fractal", 200, {6, 0.7, 0.8}},
+                           {"simplex", 64}
+                       )
+	--testNoise:setthreshold(0.2):setseed(1337)
+	test_noise:setseed(3200)
+	return test_noise
+end
+
+function World:make_whole_chunk(cx, cy)
+	c, h = self:make_chunk(cx, cy)
+	self:make_caves(c, h, cx, cy)
+	return c
+end
+
 function World:make_chunk(cx, cy)
 	local noise = self.noise
 	local chunk = {}
@@ -48,10 +66,10 @@ function World:make_chunk(cx, cy)
 	local heights = {}
 	for y = 1, chunk_size  do
 		chunk[y] = {}
-		for z = 1, 64 do
+		for z = 1, chunk_height do
 			chunk[y][z] = {}
 			for x = 1, chunk_size do
-				top = ceil(64.0 * noise:eval((cx*chunk_size) + x, (cy*chunk_size) + y))
+				top = ceil(chunk_height * noise:eval((cx*chunk_size) + x, (cy*chunk_size) + y))
 				--print("Z: " .. top)
 				
 				if heights[x] ~= nil and heights[x] < z then
@@ -69,7 +87,30 @@ function World:make_chunk(cx, cy)
 			end
 		end
 	end
-	return chunk
+	return chunk, heights
+end
+
+function World:make_caves(c, h, cx, cy)
+	local noise = self.cnoise
+	local chunk = c
+	local heights = h
+	local block
+	for y = 1, chunk_size  do
+		for z = 1, chunk_height do
+			for x = 1, chunk_size do	
+				value = noise:eval((cx*chunk_size) + x, (cy*chunk_size) + y, z)
+				block = (value > 0.4 and z > 14 and 0)
+				if block == 0 and z > heights[x] then
+					chunk[y][z][x] = block
+					block = -1
+				end
+			end
+		end
+	end
+end
+
+function World:make_rivers(c, cx, cy)
+
 end
 
 function World:generate()
@@ -79,7 +120,7 @@ function World:generate()
 	for y = 1, self.height do
 		chunks[y] = {}
 		for x = 1, self.width do
-			c = self:make_chunk(x, y)
+			c = self:make_whole_chunk(x, y)
 			chk = Chunk(c, self)
 			chunks[y][x] = chk
 			self.total_chunks = self.total_chunks + 1

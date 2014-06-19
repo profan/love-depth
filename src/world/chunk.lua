@@ -4,6 +4,7 @@
 local tile_width = 32
 local tile_height = 16
 local chunk_size = 32
+local chunk_height = 32
 
 -- end of placeholders ----------------
 ---------------------------------------
@@ -16,7 +17,7 @@ local Chunk = Class {}
 function Chunk:init(chunkdata, world)
 	self.world = world
 	self.blocks = chunkdata
-	self.batch = love.graphics.newSpriteBatch(spritesheet, 10000)
+	self.batch = love.graphics.newSpriteBatch(spritesheet, 30000)
 	self.faces = {}
 	self.dirty = true
 end
