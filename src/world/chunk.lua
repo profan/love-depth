@@ -4,7 +4,7 @@
 local tile_width = 32
 local tile_height = 16
 local chunk_size = 32
-local chunk_height = 32
+local chunk_height = 128
 
 -- end of placeholders ----------------
 ---------------------------------------
@@ -14,12 +14,14 @@ Class = require "hump.class"
 
 local Chunk = Class {}
 
-function Chunk:init(chunkdata, world)
-	self.world = world
+function Chunk:init(chunkdata)
 	self.blocks = chunkdata
 	self.batch = love.graphics.newSpriteBatch(spritesheet, 30000)
 	self.faces = {}
 	self.dirty = true
+	-- stats
+	self.total_blocks = 0
+	self.active_blocks = 0
 end
 
 function Chunk:update(dt)
@@ -36,6 +38,10 @@ function Chunk:rebuild(offsetx, offsety)
 	local block_types = blocks
 	self.batch:bind()
 	self.batch:clear()
+	
+	-- reset stats
+	self.active_blocks = 0
+	self.total_blocks = 0
 	
 	local y_len = #tmp
 	local z_len, x_len
@@ -59,15 +65,15 @@ function Chunk:rebuild(offsetx, offsety)
 					if y-1 ~= 0 		 	and tmp[y-1][z][x] ~= 0 then faces = faces+1 end -- in front
 					if y+1 ~= y_len+1 		and tmp[y+1][z][x] ~= 0 then faces = faces+1 end -- behind
 					
-					if faces == 6 then
-						self.world.total_active = self.world.total_active - 1
-					end
+					-- update stats
+					self.total_blocks = self.total_blocks + 1
 					
 					if faces ~= 6 then
 						block = block_types[cur_block] or 0
 						t_x = ((x * tile_width / 2) + (y * tile_width / 2)) + offsetx
 						t_y = ((y * tile_height / 2) - (x * tile_height / 2) + offsety) + (z * tile_height)
 						self.batch:add(block, t_x, t_y, 0, 1, 1, 0, 0, 0, 0)
+						self.active_blocks = self.active_blocks + 1
 					end
 				end
 			end

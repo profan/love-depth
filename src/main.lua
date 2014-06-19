@@ -60,7 +60,7 @@ function setup_game()
 	
 	
 	-- world related
-	world = World("Overworld", 20, 20)
+	world = World("Overworld", 4, 4)
 	
 	-- setup stuff
 	setup_tiles()
@@ -174,7 +174,7 @@ function love.update(dt)
 	
 	-- mouse stuff
 	if love.mouse.isDown("x1") then cam:zoom(1.25) end
-	if love.mouse.isDown("l") then explode() end
+	if love.mouse.isDown("r") then explode() end
 	if love.mouse.isDown("m") then cam:zoomTo(1) end
 	if love.mouse.isDown("x2") then cam:zoom(0.75) end
 	

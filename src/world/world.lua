@@ -6,7 +6,7 @@ local function istable(t) return type(t) == 'table' end
 local tile_width = 32
 local tile_height = 16
 local chunk_size = 32
-local chunk_height = 32
+local chunk_height = 128
 
 -- end of placeholders ----------------
 ---------------------------------------
@@ -27,7 +27,7 @@ function World:init(name, width, height)
 	-- stats
 	self.total_blocks = 0
 	self.total_chunks = 0
-	self.total_active = 0
+	self.active_blocks = 0
 end
 
 function World:make_noise()
@@ -69,7 +69,7 @@ function World:make_chunk(cx, cy)
 		for z = 1, chunk_height do
 			chunk[y][z] = {}
 			for x = 1, chunk_size do
-				top = ceil(chunk_height * noise:eval((cx*chunk_size) + x, (cy*chunk_size) + y))
+				top = ceil(32 * noise:eval((cx*chunk_size) + x, (cy*chunk_size) + y))
 				--print("Z: " .. top)
 				
 				if heights[x] ~= nil and heights[x] < z then
@@ -102,6 +102,7 @@ function World:make_caves(c, h, cx, cy)
 				block = (value > 0.4 and z > 14 and 0)
 				if block == 0 and z > heights[x] then
 					chunk[y][z][x] = block
+					self.total_blocks = self.total_blocks - 1
 					block = -1
 				end
 			end
@@ -121,11 +122,11 @@ function World:generate()
 		chunks[y] = {}
 		for x = 1, self.width do
 			c = self:make_whole_chunk(x, y)
-			chk = Chunk(c, self)
+			chk = Chunk(c)
 			chunks[y][x] = chk
 			self.total_chunks = self.total_chunks + 1
 			self.total_blocks = self.total_blocks + 32768
-			self.total_active = self.total_blocks
+			self.active_blocks = self.total_blocks
 		end
 	end
 	local time_taken = love.timer.getTime() - stime
@@ -140,16 +141,31 @@ function World:rebuild_chunk(x, y)
 	self.chunks[y][x]:rebuild(o_x, o_y)
 end
 
+function World:rebuild_chunk(chunk, x, y)
+	local o_x = ((x * (chunk_size*tile_width)/ 2) + (y * (chunk_size*tile_width) / 2))
+	local o_y = ((y * (chunk_size*tile_height) / 2) - (x * (chunk_size*tile_height) / 2))
+	chunk:rebuild(o_x, o_y)
+end
+
 function World:rebuild()
+	-- reset stats
+	self.active_blocks = 0
+	self.total_blocks = 0
+	
+	-- local vars
+	local chunk
 	local total_built = 0
 	local chunks = self.chunks
 	local stime = love.timer.getTime()
 	for y = 1, #chunks do
 		for x = #chunks[y], 1, -1 do
-			if chunks[y][x].dirty then
-				self:rebuild_chunk(x, y)
+			chunk = chunks[y][x]
+			if chunk.dirty then
+				self:rebuild_chunk(chunk, x, y)
 				total_built = total_built + 1
 			end
+			self.active_blocks = self.active_blocks + chunk.active_blocks
+			self.total_blocks = self.total_blocks + chunk.total_blocks
 		end
 	end
 	local time_taken = love.timer.getTime() - stime
@@ -198,7 +214,7 @@ function World:chunk(x, y)
 end
 
 function World:stats()
-	return self.total_chunks, self.total_blocks, self.total_active
+	return self.total_chunks, self.total_blocks, self.active_blocks
 end
 
 return World
