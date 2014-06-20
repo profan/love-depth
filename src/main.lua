@@ -51,6 +51,8 @@ local color_limegreen =	{153, 255, 0}
 local color_white = {255, 255, 255}
 local color_blue =	{30, 144, 255} -- dodger blue
 
+local chunk_height = 64
+
 function setup_game()
 	screen_w = love.graphics.getWidth()
 	screen_h = love.graphics.getHeight()
@@ -60,9 +62,10 @@ function setup_game()
 	
 	
 	-- world related
-	world = World("Overworld", 4, 4)
+	world = World("Overworld", 2, 2)
 	
 	-- setup stuff
+	zoom_level = 1
 	setup_tiles()
 	setup_tilemap()
 end
@@ -98,7 +101,7 @@ end
 
 function setup_tilemap()
 	world:generate()
-	world:rebuild()
+	world:rebuild(zoom_level)
 end
 
 function draw_debug()
@@ -112,11 +115,12 @@ function draw_debug()
 	lg.print("Chunks: " .. chunks, 0, 32)
 	lg.print("Blocks: " .. blocks, 0, 48)
 	lg.print("Active blocks: " .. active, 0, 64)
+	lg.print("Zoom Level: " .. zoom_level, 0, 80)
 	lg.pop()
 end
 
 function draw_world()
-	world:draw()
+	world:draw(zoom_level)
 end
 
 function draw_highlight()
@@ -138,7 +142,7 @@ function explode()
 			end
 		end
 	end
-	world:rebuild()
+	world:rebuild(zoom_level)
 end
 
 -- end of game related functions/vars -
@@ -192,7 +196,18 @@ function love.keypressed(key)
 end
 
 function love.mousepressed(x, y, button)
-	
+	if button == "wu" then 
+		if zoom_level + 1 ~= chunk_height+1 then
+			zoom_level = zoom_level + 1
+			world:rebuild(zoom_level) 
+		end
+	end
+	if button == "wd" then
+		if zoom_level - 1 ~= 0 then
+			zoom_level = zoom_level - 1
+			world:rebuild(zoom_level)
+		end
+	end
 end
 
 -- end of love functions/vars ---------

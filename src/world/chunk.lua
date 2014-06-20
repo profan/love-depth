@@ -4,7 +4,7 @@
 local tile_width = 32
 local tile_height = 16
 local chunk_size = 32
-local chunk_height = 128
+local chunk_height = 64
 
 -- end of placeholders ----------------
 ---------------------------------------
@@ -33,7 +33,7 @@ function Chunk:draw(offsetx, offsety)
 	lg.draw(self.batch)
 end
 
-function Chunk:rebuild(offsetx, offsety)
+function Chunk:rebuild(zoom, offsetx, offsety)
 	local tmp = self.blocks
 	local block_types = blocks
 	self.batch:bind()
@@ -50,7 +50,7 @@ function Chunk:rebuild(offsetx, offsety)
 	local cur_block
 	local block, t_x, t_y
 	for y = 1, #tmp do
-		for z = #tmp[y], 1, -1 do
+		for z = #tmp[y], zoom, -1 do
 			z_len = #tmp[y]
 			for x = #tmp[y][z], 1, -1 do
 				faces = 0
@@ -58,8 +58,10 @@ function Chunk:rebuild(offsetx, offsety)
 				cur_block = tmp[y][z][x]
 				
 				if cur_block ~= 0 then
-					if z-1 ~= 0 		 	and tmp[y][z-1][x] ~= 0 then faces = faces+1 end -- above
-					if z+1 ~= z_len+1	 	and tmp[y][z+1][x] ~= 0 then faces = faces+1 end -- below
+					if z ~= zoom then
+						if z-1 ~= 0 		 	and tmp[y][z-1][x] ~= 0 then faces = faces+1 end -- above
+						if z+1 ~= z_len+1	 	and tmp[y][z+1][x] ~= 0 then faces = faces+1 end -- below
+					end
 					if x-1 ~= 0 		 	and tmp[y][z][x-1] ~= 0 then faces = faces+1 end -- left of
 					if x+1 ~= x_len+1 		and tmp[y][z][x+1] ~= 0 then faces = faces+1 end -- right of
 					if y-1 ~= 0 		 	and tmp[y-1][z][x] ~= 0 then faces = faces+1 end -- in front

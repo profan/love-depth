@@ -148,19 +148,24 @@ function World:generate()
 	print(" - Seconds per chunk: " .. time_taken/total_chunks)
 end
 
+--[[
 function World:rebuild_chunk(x, y)
 	local o_x = ((x * (chunk_size*tile_width)/ 2) + (y * (chunk_size*tile_width) / 2))
 	local o_y = ((y * (chunk_size*tile_height) / 2) - (x * (chunk_size*tile_height) / 2))
 	self.chunks[y][x]:rebuild(o_x, o_y)
 end
+]]--
 
-function World:rebuild_chunk(chunk, x, y)
+function World:rebuild_chunk(chunk, x, y, zoom)
 	local o_x = ((x * (chunk_size*tile_width)/ 2) + (y * (chunk_size*tile_width) / 2))
 	local o_y = ((y * (chunk_size*tile_height) / 2) - (x * (chunk_size*tile_height) / 2))
-	chunk:rebuild(o_x, o_y)
+	chunk:rebuild(zoom, o_x, o_y)
 end
 
-function World:rebuild()
+function World:rebuild(zoom)
+	-- memory
+	last_zoom = last_zoom or zoom
+
 	-- reset stats
 	self.active_blocks = 0
 	self.total_blocks = 0
@@ -173,8 +178,8 @@ function World:rebuild()
 	for y = 1, #chunks do
 		for x = #chunks[y], 1, -1 do
 			chunk = chunks[y][x]
-			if chunk.dirty then
-				self:rebuild_chunk(chunk, x, y)
+			if chunk.dirty or last_zoom ~= zoom then
+				self:rebuild_chunk(chunk, x, y, zoom)
 				total_built = total_built + 1
 			end
 			self.active_blocks = self.active_blocks + chunk.active_blocks
@@ -184,6 +189,9 @@ function World:rebuild()
 	local time_taken = love.timer.getTime() - stime
 	print("It took: " .. time_taken .. " seconds to rebuild " .. total_built .. " chunks spritebatches.")
 	print(" - Seconds per chunk: " .. time_taken/total_built)
+	
+	--memory
+	last_zoom = zoom
 end
 
 function World:update(dt)
@@ -195,14 +203,17 @@ function World:update(dt)
 	end
 end
 
-function World:draw()
+function World:draw(z)
+	local lg = love.graphics
+	lg.push()
+	lg.translate(0, -16*z)
 	local chunks = self.chunks
 	for y = 1, #chunks do
 		for x = #chunks[y], 1, -1 do
 			chunks[y][x]:draw()
-			
 		end
 	end
+	lg.pop()
 end
 
 function World:block(x, y, z)
