@@ -6,7 +6,7 @@ local function istable(t) return type(t) == 'table' end
 local tile_width = 32
 local tile_height = 16
 local chunk_size = 32
-local chunk_height = 64
+local chunk_height = 128
 
 -- end of placeholders ----------------
 ---------------------------------------
@@ -192,6 +192,9 @@ function World:rebuild(zoom)
 	
 	--memory
 	last_zoom = zoom
+	
+	--update global
+	rebuild_time = time_taken
 end
 
 function World:update(dt)

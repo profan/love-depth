@@ -22,6 +22,9 @@ function Chunk:init(chunkdata)
 	-- stats
 	self.total_blocks = 0
 	self.active_blocks = 0
+	
+	-- list of quad refs in spritebatch
+	self.drawn_blocks = {}
 end
 
 function Chunk:update(dt)
@@ -69,12 +72,12 @@ function Chunk:rebuild(zoom, offsetx, offsety)
 					
 					-- update stats
 					self.total_blocks = self.total_blocks + 1
-					
+
 					if faces ~= 6 then
 						block = block_types[cur_block] or 0
 						t_x = ((x * tile_width / 2) + (y * tile_width / 2)) + offsetx
 						t_y = ((y * tile_height / 2) - (x * tile_height / 2) + offsety) + (z * tile_height)
-						self.batch:add(block, t_x, t_y, 0, 1, 1, 0, 0, 0, 0)
+						local id = self.batch:add(block, t_x, t_y, 0, 1, 1, 0, 0, 0, 0)
 						self.active_blocks = self.active_blocks + 1
 					end
 				end

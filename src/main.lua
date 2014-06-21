@@ -51,7 +51,7 @@ local color_limegreen =	{153, 255, 0}
 local color_white = {255, 255, 255}
 local color_blue =	{30, 144, 255} -- dodger blue
 
-local chunk_height = 64
+local chunk_height = 128
 
 function setup_game()
 	screen_w = love.graphics.getWidth()
@@ -62,7 +62,7 @@ function setup_game()
 	
 	
 	-- world related
-	world = World("Overworld", 2, 2)
+	world = World("Overworld", 8, 8)
 	
 	-- setup stuff
 	zoom_level = 1
@@ -116,6 +116,10 @@ function draw_debug()
 	lg.print("Blocks: " .. blocks, 0, 48)
 	lg.print("Active blocks: " .. active, 0, 64)
 	lg.print("Zoom Level: " .. zoom_level, 0, 80)
+	lg.print("Update time: " .. (update_time or 0), 0, 96)
+	lg.print("Render time: " .. (render_time or 0), 0, 112)
+	lg.print("Last rebuild time: " .. (rebuild_time or 0), 0, 128)
+	lg.print("Current wait time: " .. (wait_time or 0), 0, 144)
 	lg.pop()
 end
 
@@ -166,14 +170,20 @@ function love.load()
 end
 
 function love.draw()
+	-- timing
+	local stime = love.timer.getTime()
 	cam:attach()
 	draw_world()
 	draw_highlight()
 	cam:detach()
 	draw_debug()
+	render_time = love.timer.getTime() - stime
 end
 
 function love.update(dt)
+	newzoom = newzoom or zoom_level
+	-- timing
+	local stime = love.timer.getTime()
 	
 	-- keyboard movement
 	if love.keyboard.isDown("up") then cam:move(0, -5) end
@@ -181,31 +191,39 @@ function love.update(dt)
 	if love.keyboard.isDown("left") then cam:move(-5, 0) end
 	if love.keyboard.isDown("right") then cam:move(5, 0) end
 	
+	wait_time = wait_time - dt
+	if newzoom ~= zoom_level and wait_time <= 0 then
+		world:rebuild(zoom_level) 
+		newzoom = zoom_level
+		wait_time = 0
+	end
+	
 	-- mouse stuff
-	if love.mouse.isDown("x1") then cam:zoom(1.25) end
+	if love.mouse.isDown("x1") then cam:zoom(1.05) end
 	if love.mouse.isDown("r") then explode() end
 	if love.mouse.isDown("m") then cam:zoomTo(1) end
-	if love.mouse.isDown("x2") then cam:zoom(0.75) end
+	if love.mouse.isDown("x2") then cam:zoom(0.95) end
 	
 	Timer.update(dt)
-	
+	update_time = love.timer.getTime() - stime
 end
 
 function love.keypressed(key)
 	
 end
 
+wait_time = 0
 function love.mousepressed(x, y, button)
 	if button == "wu" then 
 		if zoom_level + 1 ~= chunk_height+1 then
 			zoom_level = zoom_level + 1
-			world:rebuild(zoom_level) 
+			wait_time = wait_time + 0.05
 		end
 	end
 	if button == "wd" then
 		if zoom_level - 1 ~= 0 then
 			zoom_level = zoom_level - 1
-			world:rebuild(zoom_level)
+			wait_time = wait_time + 0.05
 		end
 	end
 end
