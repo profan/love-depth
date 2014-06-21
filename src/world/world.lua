@@ -23,6 +23,10 @@ function World:init(name, width, height)
 	self.height = height
 	self.noise = self:make_noise()
 	self.cnoise = self:cave_noise()
+	self.buildthread = love.thread.newThread("buildthread.lua")
+	self.buildchannel = love.thread.getChannel("builder")
+	self.builtchannel = love.thread.getChannel("finished")
+	self.buildthread:start()
 	
 	-- stats
 	self.total_blocks = 0
@@ -163,38 +167,44 @@ function World:rebuild_chunk(chunk, x, y, zoom)
 end
 
 function World:rebuild(zoom)
-	-- memory
-	last_zoom = last_zoom or zoom
+	if not self.buildthread:get('started') then
+		-- memory
+		last_zoom = last_zoom or zoom
 
-	-- reset stats
-	self.active_blocks = 0
-	self.total_blocks = 0
-	
-	-- local vars
-	local chunk
-	local total_built = 0
-	local chunks = self.chunks
-	local stime = love.timer.getTime()
-	for y = 1, #chunks do
-		for x = #chunks[y], 1, -1 do
-			chunk = chunks[y][x]
-			if chunk.dirty or last_zoom ~= zoom then
-				self:rebuild_chunk(chunk, x, y, zoom)
-				total_built = total_built + 1
+		-- reset stats
+		self.active_blocks = 0
+		self.total_blocks = 0
+		
+		-- local vars
+		local chunk
+		local total_built = 0
+		local chunks = self.chunks
+		local stime = love.timer.getTime()
+		for y = 1, #chunks do
+			for x = #chunks[y], 1, -1 do
+				chunk = chunks[y][x]
+				if chunk.dirty or last_zoom ~= zoom then
+					--self:rebuild_chunk(chunk, x, y, zoom)
+					self.buildchannel:push({chunk, x, y, zoom})
+					total_built = total_built + 1
+				end
+				self.active_blocks = self.active_blocks + chunk.active_blocks
+				self.total_blocks = self.total_blocks + chunk.total_blocks
 			end
-			self.active_blocks = self.active_blocks + chunk.active_blocks
-			self.total_blocks = self.total_blocks + chunk.total_blocks
 		end
 	end
-	local time_taken = love.timer.getTime() - stime
-	print("It took: " .. time_taken .. " seconds to rebuild " .. total_built .. " chunks spritebatches.")
-	print(" - Seconds per chunk: " .. time_taken/total_built)
 	
-	--memory
-	last_zoom = zoom
+	if self.buildthread:get("complete") then
+		local time_taken = love.timer.getTime() - stime
+		print("It took: " .. time_taken .. " seconds to rebuild " .. total_built .. " chunks spritebatches.")
+		print(" - Seconds per chunk: " .. time_taken/total_built)
+		
+		--memory
+		last_zoom = zoom
 	
-	--update global
-	rebuild_time = time_taken
+		--update global
+		rebuild_time = time_taken
+	end
 end
 
 function World:update(dt)

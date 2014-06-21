@@ -1,46 +1,16 @@
----------------------------------------
--- temporary placeholders for chunk ---
+require "love.timer"
 
-local tile_width = 32
-local tile_height = 16
-local chunk_size = 32
-local chunk_height = 64
+channel = love.thread.getChannel("builder")
+built = love.thread.getChannel("finished")
 
--- end of placeholders ----------------
----------------------------------------
+chunk = channel:pop()
 
-
-Class = require "hump.class"
-
-local Chunk = Class {}
-
-function Chunk:init(chunkdata)
-	self.blocks = chunkdata
-	self.batch = love.graphics.newSpriteBatch(spritesheet, 30000)
-	self.faces = {}
-	self.dirty = true
-	-- stats
-	self.total_blocks = 0
-	self.active_blocks = 0
-	
-	-- list of quad refs in spritebatch
-	self.drawn_blocks = {}
+if chunk then
+	v = chunk_rebuild(chunk[1], chunk[2], chunk[3])
+	built:push(v)
 end
 
-function Chunk:update(dt)
-
-end
-
-function Chunk:draw(offsetx, offsety)
-	local lg = love.graphics
-	lg.draw(self.batch)
-end
-
-function Chunk:threadbuild(zoom, offsetx, offsety)
-	
-end
-
-function Chunk:rebuild(zoom, offsetx, offsety)
+function chunk_rebuild(zoom, offsetx, offsety)
 	local tmp = self.blocks
 	local block_types = blocks
 	
@@ -90,17 +60,3 @@ function Chunk:rebuild(zoom, offsetx, offsety)
 	self.dirty = false
 	return buildqueue -- returns functions to be run that will do in main thread
 end
-
-function Chunk:build_batch(batch)
-	self.batch:bind()
-	self.batch:clear()
-	for i = 1, #batch do
-		for k = 1, #batch[i] do
-			local b = batch[i]
-			self.batch:add(b[1], b[2], b[3], b[4], b[5], b[6], b[7], b[8], b[9], b[10])
-		end
-	end
-	self.batch:unbind()
-end
-
-return Chunk

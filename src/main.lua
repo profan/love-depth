@@ -60,9 +60,8 @@ function setup_game()
 	-- camera setup
 	cam = Camera(5000, 0)
 	
-	
 	-- world related
-	world = World("Overworld", 8, 8)
+	world = World("Overworld", 4, 4)
 	
 	-- setup stuff
 	zoom_level = 1
