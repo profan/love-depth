@@ -28,7 +28,7 @@ function Chunk:init(chunkdata)
 end
 
 function Chunk:update(dt)
-
+	
 end
 
 function Chunk:draw(offsetx, offsety)
@@ -52,6 +52,10 @@ function Chunk:rebuild(zoom, offsetx, offsety)
 	local faces
 	local cur_block
 	local block, t_x, t_y
+	
+	-- total batch time
+	local btime = 0
+	local stime
 	for y = 1, #tmp do
 		for z = #tmp[y], zoom, -1 do
 			z_len = #tmp[y]
@@ -77,7 +81,9 @@ function Chunk:rebuild(zoom, offsetx, offsety)
 						block = block_types[cur_block] or 0
 						t_x = ((x * tile_width / 2) + (y * tile_width / 2)) + offsetx
 						t_y = ((y * tile_height / 2) - (x * tile_height / 2) + offsety) + (z * tile_height)
+						stime = love.timer.getTime()
 						local id = self.batch:add(block, t_x, t_y, 0, 1, 1, 0, 0, 0, 0)
+						btime = btime + love.timer.getTime() - stime
 						self.active_blocks = self.active_blocks + 1
 					end
 				end
@@ -86,6 +92,7 @@ function Chunk:rebuild(zoom, offsetx, offsety)
 	end
 	self.batch:unbind()
 	self.dirty = false
+	return btime
 end
 
 return Chunk

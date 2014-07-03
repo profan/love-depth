@@ -62,7 +62,7 @@ function setup_game()
 	
 	
 	-- world related
-	world = World("Overworld", 8, 8)
+	world = World("Overworld", 2, 2)
 	
 	-- setup stuff
 	zoom_level = 1
