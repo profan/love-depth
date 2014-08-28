@@ -107,6 +107,8 @@ function draw_debug()
 	local lg = love.graphics
 	local chunks, blocks, active = world:stats()
 	
+	local v_x, v_y = world_to_grid(cam:worldCoords(love.mouse.getPosition()))
+	
 	lg.setColor(color_white)
 	lg.push()
 	lg.translate(800, 32)
@@ -119,6 +121,8 @@ function draw_debug()
 	lg.print("Render time: " .. (render_time or 0), 0, 112)
 	lg.print("Last rebuild time: " .. (rebuild_time or 0), 0, 128)
 	lg.print("Current wait time: " .. (wait_time or 0), 0, 144)
+	lg.print("Under Mouse World X:" .. v_x, 0, 164)
+	lg.print("Under Mouse World Y:" .. v_y, 0, 180)
 	lg.pop()
 end
 
@@ -132,8 +136,10 @@ function draw_highlight()
 end
 
 function world_to_grid(x, y)
-	local n_x = math.floor(x / tile_width) * tile_width
-	local n_y = math.floor(y / tile_height) * tile_height
+	local m = math.floor(y / tile_height - (x-(tile_width/2)) / tile_width)
+	local n = math.floor(y / tile_height + (x-(tile_width/2)) / tile_width)
+	local n_x = ((n - m) / 2 * tile_width)
+	local n_y = ((n + m) / 2 * tile_height)
 	return n_x, n_y
 end
 
