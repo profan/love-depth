@@ -53,7 +53,6 @@ local color_blue =	{30, 144, 255} -- dodger blue
 
 local chunk_height = 128
 
-	printf("[inc]: brain->mem[0]: %d\n", brain->mem[0]);
 function setup_game()
 	screen_w = love.graphics.getWidth()
 	screen_h = love.graphics.getHeight()
