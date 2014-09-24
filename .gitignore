@@ -19,3 +19,6 @@ core
 #Tup related
 tup.config
 .tup/*
+
+cubesheet.png
+src/cubesheet_noisyv1.png
