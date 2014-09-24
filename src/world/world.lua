@@ -12,7 +12,7 @@ local chunk_height = 128
 ---------------------------------------
 
 Class = require "hump.class"
-lovenoise = require "lovenoise"
+lovenoise = require "lovenoise.lovenoise"
 
 local World = Class {}
 
@@ -147,14 +147,6 @@ function World:generate()
 	print("It took: " .. time_taken .. " seconds to build " .. total_chunks .. " chunks.")
 	print(" - Seconds per chunk: " .. time_taken/total_chunks)
 end
-
---[[
-function World:rebuild_chunk(x, y)
-	local o_x = ((x * (chunk_size*tile_width)/ 2) + (y * (chunk_size*tile_width) / 2))
-	local o_y = ((y * (chunk_size*tile_height) / 2) - (x * (chunk_size*tile_height) / 2))
-	self.chunks[y][x]:rebuild(o_x, o_y)
-end
-]]--
 
 function World:rebuild_chunk(chunk, x, y, zoom)
 	local o_x = ((x * (chunk_size*tile_width)/ 2) + (y * (chunk_size*tile_width) / 2))
