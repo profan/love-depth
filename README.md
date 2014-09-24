@@ -10,7 +10,7 @@ Requirements
 
 Running the test project
 
-		make
+		love src
 
 Downloading the source
 ------------
