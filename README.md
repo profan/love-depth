@@ -1,12 +1,12 @@
 love-depth
 =================================
 
-Chunk based isometric world library for LÖVE2D, for those foolish enough to want to try and make their game world happen in three dimensions.
+Chunk based isometric world library for LÖVE, for those foolish enough to want to try and make their game world happen in three dimensions.
 
 Requirements
 ------------
 
-* LÖVE2D 0.9.1
+* LÖVE 0.9.1
 
 Running the test project
 
