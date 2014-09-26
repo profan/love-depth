@@ -40,7 +40,7 @@ local Noise = {}
 Noise.__index = Noise
 
 -- presets
-local preset = require("presetnoise")
+local preset = require("lovenoise.presetnoise")
 
 -- util functions
 local function clamp(v, M, m)
