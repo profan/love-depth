@@ -8,7 +8,7 @@ Requirements
 
 * LÖVE 0.9.1
 
-Running the test project
+Running the example project
 
 		love src
 
