@@ -39,6 +39,9 @@ Block = require "world.block"
 
 blocks = {}
 
+-- related to rebuilding on zoom
+wait_time = 0
+
 -- generic
 local screen_w
 local screen_h
@@ -143,6 +146,7 @@ function world_to_grid(x, y)
 	return n_x, n_y
 end
 
+wait_time = 0
 function explode()
 	for x = 1, 64 do
 		for y = 1, 64 do
@@ -217,7 +221,6 @@ function love.keypressed(key)
 	
 end
 
-wait_time = 0
 function love.mousepressed(x, y, button)
 	if button == "wu" then 
 		if zoom_level + 1 ~= chunk_height+1 then
