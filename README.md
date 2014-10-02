@@ -30,10 +30,6 @@ Details
 
 TODO
 ------------
-- [ ] Let world class take a function to use for creating chunks.
-- [ ] Implement virtual paging for loading chunks, right now world size is static.
-- [ ] Implement depth sorting to allow for drawing sprites among the isometric blocks.
-- [ ] Implement threading for chunk reconstruction (computing what needs to be drawn).
 - [ ] Write tests.
 
 Credits
