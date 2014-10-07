@@ -27,9 +27,9 @@ require "cupid.debug"
 Timer = require "hump.timer"
 Vector = require "hump.vector"
 Camera = require "hump.camera"
-World = require "world.world"
-Chunk = require "world.chunk"
-Block = require "world.block"
+
+-- lib stuff
+require "init"
 
 -- end of hump library includes ------
 ---------------------------------------

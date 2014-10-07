@@ -1,16 +1,3 @@
----------------------------------------
--- temporary placeholders for chunk ---
-
-local tile_width = 32
-local tile_height = 16
-local chunk_size = 32
-local chunk_height = 64
-
--- end of placeholders ----------------
----------------------------------------
-
-Class = require "hump.class"
-
 local Chunk = Class {}
 
 function Chunk:init(chunkdata)
@@ -86,8 +73,8 @@ function Chunk:rebuild(zoom, offsetx, offsety)
 
 					if faces ~= 6 then
 						block = tilemap[cur_block] or 0
-						tile_x = ((x * tile_width / 2) + (y * tile_width / 2)) + offsetx
-						tile_y = ((y * tile_height / 2) - (x * tile_height / 2) + offsety) + (z * tile_height)
+						tile_x = ((x * World.tile_width / 2) + (y * World.tile_width / 2)) + offsetx
+						tile_y = ((y * World.tile_height / 2) - (x * World.tile_height / 2) + offsety) + (z * World.tile_height)
 						stime = love.timer.getTime()
 						local id = self.batch:add(block, tile_x, tile_y, 0, 1, 1, 0, 0, 0, 0)
 						btime = btime + love.timer.getTime() - stime

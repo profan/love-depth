@@ -3,18 +3,17 @@
 
 local function istable(t) return type(t) == 'table' end
 
-local tile_width = 32
-local tile_height = 16
-local chunk_size = 32
-local chunk_height = 128
-
 -- end of placeholders ----------------
 ---------------------------------------
 
-Class = require "hump.class"
 lovenoise = require "lovenoise.lovenoise"
 
 local World = Class {}
+
+World.tile_width = 32
+World.tile_height = 16
+World.chunk_size = 32
+World.chunk_height = 128
 
 function World:init(name, width, height)
 	self.chunks = {}
@@ -65,12 +64,12 @@ function World:make_chunk(c, cx, cy)
 	local ceil = math.ceil
 	
 	local heights = {}
-	for y = 1, chunk_size  do
+	for y = 1, World.chunk_size  do
 		chunk[y] = {}
-		for z = 1, chunk_height do
+		for z = 1, World.chunk_height do
 			chunk[y][z] = {}
-			for x = 1, chunk_size do
-				top = ceil(32 * noise:eval((cx*chunk_size) + x, (cy*chunk_size) + y))
+			for x = 1, World.chunk_size do
+				top = ceil(32 * noise:eval((cx*World.chunk_size) + x, (cy*World.chunk_size) + y))
 				--print("Z: " .. top)
 				
 				if heights[x] ~= nil and heights[x] < z then
@@ -96,10 +95,10 @@ function World:make_caves(c, h, cx, cy)
 	local chunk = c
 	local heights = h
 	local block
-	for y = 1, chunk_size  do
-		for z = 1, chunk_height do
-			for x = 1, chunk_size do	
-				value = noise:eval((cx*chunk_size) + x, (cy*chunk_size) + y, z)
+	for y = 1, World.chunk_size  do
+		for z = 1, World.chunk_height do
+			for x = 1, World.chunk_size do	
+				value = noise:eval((cx*World.chunk_size) + x, (cy*World.chunk_size) + y, z)
 				block = (value > 0.4 and z > 14 and 0)
 				if block == 0 and z > heights[x] then
 					chunk[y][z][x] = block
@@ -116,9 +115,9 @@ function World:make_rivers(c, cx, cy)
 end
 
 function World:make_sea(c, cx, cy)
-	for y = 1, chunk_size  do
-		for z = 1, chunk_height do
-			for x = 1, chunk_size do
+	for y = 1, World.chunk_size  do
+		for z = 1, World.chunk_height do
+			for x = 1, World.chunk_size do
 				if z < 64 and z > 15 and c[y][z][x] == 0 then
 					c[y][z][x] = 5
 				end
@@ -149,8 +148,8 @@ function World:generate()
 end
 
 function World:rebuild_chunk(chunk, x, y, zoom)
-	local o_x = ((x * (chunk_size*tile_width)/ 2) + (y * (chunk_size*tile_width) / 2))
-	local o_y = ((y * (chunk_size*tile_height) / 2) - (x * (chunk_size*tile_height) / 2))
+	local o_x = ((x * (World.chunk_size*World.tile_width)/ 2) + (y * (World.chunk_size*World.tile_width) / 2))
+	local o_y = ((y * (World.chunk_size*World.tile_height) / 2) - (x * (World.chunk_size*World.tile_height) / 2))
 	return chunk:rebuild(zoom, o_x, o_y)
 end
 
@@ -214,18 +213,18 @@ function World:draw(z)
 end
 
 function World:block(x, y, z)
-	local c_x = math.floor(x / chunk_size)+1
-	local c_y = math.floor(y / chunk_size)+1
-	local o_x = (x % chunk_size)+1
-	local o_y = (y % chunk_size)+1
+	local c_x = math.floor(x / World.chunk_size)+1
+	local c_y = math.floor(y / World.chunk_size)+1
+	local o_x = (x % World.chunk_size)+1
+	local o_y = (y % World.chunk_size)+1
 	return self.chunks[c_y][c_x].blocks[o_y][z][o_x]
 end
 
 function World:set_block(x, y, z, v)
-	local c_x = math.floor(x / chunk_size)+1
-	local c_y = math.floor(y / chunk_size)+1
-	local o_x = (x % chunk_size)+1
-	local o_y = (y % chunk_size)+1
+	local c_x = math.floor(x / World.chunk_size)+1
+	local c_y = math.floor(y / World.chunk_size)+1
+	local o_x = (x % World.chunk_size)+1
+	local o_y = (y % World.chunk_size)+1
 	self.chunks[c_y][c_x].blocks[o_y][z][o_x] = v
 	self.chunks[c_y][c_x].dirty = true
 end

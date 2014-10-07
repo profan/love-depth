@@ -13,7 +13,7 @@ function love.conf(t)
 	t.window.fsaa = 0
 	t.window.fullscreen = false
 	t.window.fullscreentype = "normal"
-	t.window.borderless = true
+	t.window.borderless = false
 	t.window.resizable = false
 	t.window.highdpi = false
 	t.window.srgb = false
