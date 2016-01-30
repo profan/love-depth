@@ -53,6 +53,7 @@ function World:make_whole_chunk(cx, cy)
 	local chunk = {}
 	heights = self:make_chunk(chunk, cx, cy)
 	self:make_caves(chunk, heights, cx, cy)
+	self:make_sea(chunk, cx, cy)
 	return chunk
 end
 

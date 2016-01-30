@@ -198,10 +198,10 @@ function love.update(dt)
 	end
 	
 	-- mouse stuff
-	if love.mouse.isDown("x1") then cam:zoom(1.05) end
-	if love.mouse.isDown("r") then explode() end
+	if love.mouse.isDown("l") then cam:zoom(1.05) end
+	--if love.mouse.isDown("r") then explode() end
 	if love.mouse.isDown("m") then cam:zoomTo(1) end
-	if love.mouse.isDown("x2") then cam:zoom(0.95) end
+	if love.mouse.isDown("r") then cam:zoom(0.95) end
 	
 	Timer.update(dt)
 	update_time = love.timer.getTime() - stime

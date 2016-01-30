@@ -2,10 +2,14 @@ local Chunk = Class {}
 
 function Chunk:init(chunkdata)
 	self.blocks = chunkdata
+	self.tile_ents = {}
 	self.tilemap = blocks -- THIS IS GLOBAL!!!!!!!
-	self.batch = love.graphics.newSpriteBatch(spritesheet, 30000)
+	self.batch = love.graphics.newSpriteBatch(spritesheet, 30000, "stream")
 	self.dirty = true
 	
+	-- spritebatch identifiers
+	self.batch_ids = {}
+
 	-- tile entities
 	self.entities = {}
 	
@@ -49,6 +53,7 @@ function Chunk:rebuild(zoom, offsetx, offsety)
 	-- total batch time
 	local btime = 0
 	local stime
+
 	for y = 1, #blocks do
 		for z = #blocks[y], zoom, -1 do
 			z_len = #blocks[y]
@@ -58,11 +63,13 @@ function Chunk:rebuild(zoom, offsetx, offsety)
 				faces = 0
 				
 				if cur_block ~= 0 then -- if there is in fact somethinfg to draw, 0 means air.
+
 					-- this part checks if a block is surrounded by other blocks or not.
 					if z ~= zoom then
 						if z-1 ~= 0 		 	and blocks[y][z-1][x] ~= 0 then faces = faces+1 end -- above
 						if z+1 ~= z_len+1	 	and blocks[y][z+1][x] ~= 0 then faces = faces+1 end -- below
 					end
+
 					if x-1 ~= 0 		 	and blocks[y][z][x-1] ~= 0 then faces = faces+1 end -- left of
 					if x+1 ~= x_len+1 		and blocks[y][z][x+1] ~= 0 then faces = faces+1 end -- right of
 					if y-1 ~= 0 		 	and blocks[y-1][z][x] ~= 0 then faces = faces+1 end -- in front
@@ -80,13 +87,27 @@ function Chunk:rebuild(zoom, offsetx, offsety)
 						btime = btime + love.timer.getTime() - stime
 						self.active_blocks = self.active_blocks + 1
 					end
+
+					-- if theres a tile entity to draw here as well, do so!
+					if self.tile_ents[x] ~= nil then
+						local ent = self.tile_ents[x][y]
+						if ent ~= nil then
+							tile_x = ((x * World.tile_width / 2) + (y * World.tile_width / 2)) + offsetx
+							tile_y = ((y * World.tile_height / 2) - (x * World.tile_height / 2) + offsety) + (z * World.tile_height)
+							self.batch:add(ent.offset, tile_x, tile_y, 0, 1, 1, 0, 0, 0, 0)
+						end
+					end
+
 				end
 			end
 		end
 	end
+
 	self.batch:unbind()
 	self.dirty = false
+
 	return btime
+
 end
 
 return Chunk

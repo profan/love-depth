@@ -1,4 +1,4 @@
-Class = require "hump.class"
+local Class = require "hump.class"
 
 local Block = Class {}
 
