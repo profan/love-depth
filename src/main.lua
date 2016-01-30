@@ -65,6 +65,9 @@ function setup_game()
 	
 	-- world related
 	world = World("Overworld", 2, 2)
+
+	local test_entity = Sprite({x = 24, y = 24, z = 64}, 1)
+	world:add_entity(test_entity)
 	
 	-- setup stuff
 	zoom_level = 1

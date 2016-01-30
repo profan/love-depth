@@ -4,3 +4,5 @@ Class = require "hump.class"
 Chunk = require "world.chunk"
 World = require "world.world"
 TileEntity = require "world.tile_entity"
+
+Sprite = require "test.sprite"

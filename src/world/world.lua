@@ -6,7 +6,7 @@ local function istable(t) return type(t) == 'table' end
 -- end of placeholders ----------------
 ---------------------------------------
 
-lovenoise = require "lovenoise.lovenoise"
+local lovenoise = require "lovenoise.lovenoise"
 
 local World = Class {}
 
@@ -236,6 +236,31 @@ end
 
 function World:stats()
 	return self.total_chunks, self.total_blocks, self.active_blocks
+end
+
+function World:add_entity(new_tile_entity)
+
+	local pos = new_tile_entity.position
+	local x, y, z = pos.x, pos.y, pos.z
+	local c_x = math.floor(x / World.chunk_size)+1
+	local c_y = math.floor(y / World.chunk_size)+1
+	local o_x = (x % World.chunk_size)+1
+	local o_y = (y % World.chunk_size)+1
+
+	-- use a table to represent all tile entities at given position
+	local chunk = self.chunks[c_x][c_y]
+	if chunk.tile_ents[o_x] == nil then
+		chunk.tile_ents[o_x] = {}
+		if chunk.tile_ents[o_x][o_y] == nil then
+			chunk.tile_ents[o_x][o_y] = {}
+			if chunk.tile_ents[o_x][o_y][o_z] == nil then
+				chunk.tile_ents[o_x][o_y][o_z] = {}
+			end
+		end
+	end
+
+	table.insert(chunk.tile_ents[o_x][o_y][o_z], new_tile_entity)
+
 end
 
 return World
