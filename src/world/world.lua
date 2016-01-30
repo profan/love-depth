@@ -30,34 +30,38 @@ function World:init(name, width, height)
 end
 
 function World:make_noise()
+
 	local test_noise = lovenoise.newNoise(
-                           {"fractal", 100, {6, 0.7, 1.4}},
-                           {"simplex", 128}
-                       )
-	--testNoise:setthreshold(0.2):setseed(1337)
-	test_noise:setseed(1337)
+		{"fractal", 100, {6, 0.7, 1.4}},
+		{"simplex", 128}):setseed(1337)
+
 	return test_noise
+
 end
 
 function World:cave_noise()
+
 	local test_noise = lovenoise.newNoise(
-                           {"fractal", 200, {6, 0.7, 0.8}},
-                           {"simplex", 64}
-                       )
-	--testNoise:setthreshold(0.2):setseed(1337)
-	test_noise:setseed(3200)
+		{"fractal", 200, {6, 0.7, 0.8}},
+		{"simplex", 64}):setseed(3200)
+
 	return test_noise
+
 end
 
 function World:make_whole_chunk(cx, cy)
+
 	local chunk = {}
 	heights = self:make_chunk(chunk, cx, cy)
 	self:make_caves(chunk, heights, cx, cy)
 	self:make_sea(chunk, cx, cy)
+
 	return chunk
+
 end
 
 function World:make_chunk(c, cx, cy)
+
 	local noise = self.noise
 	local chunk = c
 	local block = 0
@@ -88,14 +92,18 @@ function World:make_chunk(c, cx, cy)
 			end
 		end
 	end
+
 	return heights
+
 end
 
 function World:make_caves(c, h, cx, cy)
+
 	local noise = self.cnoise
 	local chunk = c
 	local heights = h
 	local block
+
 	for y = 1, World.chunk_size  do
 		for z = 1, World.chunk_height do
 			for x = 1, World.chunk_size do	
@@ -109,6 +117,7 @@ function World:make_caves(c, h, cx, cy)
 			end
 		end
 	end
+
 end
 
 function World:make_rivers(c, cx, cy)
@@ -116,6 +125,7 @@ function World:make_rivers(c, cx, cy)
 end
 
 function World:make_sea(c, cx, cy)
+
 	for y = 1, World.chunk_size  do
 		for z = 1, World.chunk_height do
 			for x = 1, World.chunk_size do
@@ -125,12 +135,15 @@ function World:make_sea(c, cx, cy)
 			end
 		end
 	end
+
 end
 
 function World:generate()
+
 	local c
 	local chunks = self.chunks
 	local stime = love.timer.getTime()
+
 	for y = 1, self.height do
 		chunks[y] = {}
 		for x = 1, self.width do
@@ -142,19 +155,26 @@ function World:generate()
 			self.active_blocks = self.total_blocks
 		end
 	end
+
 	local time_taken = love.timer.getTime() - stime
 	local total_chunks = self.height*self.width
+
 	print("It took: " .. time_taken .. " seconds to build " .. total_chunks .. " chunks.")
 	print(" - Seconds per chunk: " .. time_taken/total_chunks)
+
 end
 
 function World:rebuild_chunk(chunk, x, y, zoom)
+
 	local o_x = ((x * (World.chunk_size*World.tile_width)/ 2) + (y * (World.chunk_size*World.tile_width) / 2))
 	local o_y = ((y * (World.chunk_size*World.tile_height) / 2) - (x * (World.chunk_size*World.tile_height) / 2))
+
 	return chunk:rebuild(zoom, o_x, o_y)
+
 end
 
 function World:rebuild(zoom)
+
 	-- memory
 	last_zoom = last_zoom or zoom
 
@@ -184,23 +204,27 @@ function World:rebuild(zoom)
 	print("SpriteBatch time: " .. (batchtime/time_taken)*100 .. "%")
 	print(" - seconds per chunk: " .. time_taken/total_built)
 	
-	--memory
+	-- memory
 	last_zoom = zoom
 	
-	--update global
+	-- update global
 	rebuild_time = time_taken
+
 end
 
 function World:update(dt)
+
 	local chunks = self.chunks
 	for y = 1, #chunks do
 		for x = 1, #chunks[y] do
 			chunks[y][x]:update(dt)
 		end
 	end
+	
 end
 
 function World:draw(z)
+
 	local lg = love.graphics
 	lg.push()
 	lg.translate(0, -16*z)
@@ -211,23 +235,29 @@ function World:draw(z)
 		end
 	end
 	lg.pop()
+
 end
 
 function World:block(x, y, z)
+
 	local c_x = math.floor(x / World.chunk_size)+1
 	local c_y = math.floor(y / World.chunk_size)+1
 	local o_x = (x % World.chunk_size)+1
 	local o_y = (y % World.chunk_size)+1
+
 	return self.chunks[c_y][c_x].blocks[o_y][z][o_x]
+
 end
 
 function World:set_block(x, y, z, v)
+
 	local c_x = math.floor(x / World.chunk_size)+1
 	local c_y = math.floor(y / World.chunk_size)+1
 	local o_x = (x % World.chunk_size)+1
 	local o_y = (y % World.chunk_size)+1
 	self.chunks[c_y][c_x].blocks[o_y][z][o_x] = v
 	self.chunks[c_y][c_x].dirty = true
+
 end
 
 function World:chunk(x, y)
@@ -253,13 +283,13 @@ function World:add_entity(new_tile_entity)
 		chunk.tile_ents[o_x] = {}
 		if chunk.tile_ents[o_x][o_y] == nil then
 			chunk.tile_ents[o_x][o_y] = {}
-			if chunk.tile_ents[o_x][o_y][o_z] == nil then
-				chunk.tile_ents[o_x][o_y][o_z] = {}
+			if chunk.tile_ents[o_x][o_y][z] == nil then
+				chunk.tile_ents[o_x][o_y][z] = {}
 			end
 		end
 	end
 
-	table.insert(chunk.tile_ents[o_x][o_y][o_z], new_tile_entity)
+	table.insert(chunk.tile_ents[o_x][o_y][z], new_tile_entity)
 
 end
 

@@ -64,15 +64,17 @@ function setup_game()
 	cam = Camera(2200, 0)
 	
 	-- world related
-	world = World("Overworld", 2, 2)
-
-	local test_entity = Sprite({x = 24, y = 24, z = 64}, 1)
-	world:add_entity(test_entity)
+	world = World("Overworld", 1, 1)
 	
 	-- setup stuff
 	zoom_level = 1
 	setup_tiles()
 	setup_tilemap()
+
+	-- nein
+	local test_entity = Sprite({x = 24, y = 24, z = 64}, 1)
+	world:add_entity(test_entity)
+
 end
 
 function setup_tiles()

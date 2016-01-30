@@ -92,9 +92,10 @@ function Chunk:rebuild(zoom, offsetx, offsety)
 					if self.tile_ents[x] ~= nil then
 						local ent = self.tile_ents[x][y]
 						if ent ~= nil then
+							local block = tilemap[ent.offset] or 0 -- fallback if fail
 							tile_x = ((x * World.tile_width / 2) + (y * World.tile_width / 2)) + offsetx
 							tile_y = ((y * World.tile_height / 2) - (x * World.tile_height / 2) + offsety) + (z * World.tile_height)
-							self.batch:add(ent.offset, tile_x, tile_y, 0, 1, 1, 0, 0, 0, 0)
+							self.batch:add(block, tile_x, tile_y, 0, 1, 1, 0, 0, 0, 0)
 						end
 					end
 
