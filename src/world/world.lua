@@ -188,6 +188,7 @@ function World:rebuild(zoom)
 	local chunks = self.chunks
 	local stime = love.timer.getTime()
 	local batchtime = 0
+
 	for y = 1, #chunks do
 		for x = #chunks[y], 1, -1 do
 			chunk = chunks[y][x]
@@ -199,6 +200,7 @@ function World:rebuild(zoom)
 			self.total_blocks = self.total_blocks + chunk.total_blocks
 		end
 	end
+
 	local time_taken = love.timer.getTime() - stime
 	print("It took: " .. time_taken .. " seconds to rebuild " .. total_built .. " chunks spritebatches.")
 	print("SpriteBatch time: " .. (batchtime/time_taken)*100 .. "%")
@@ -223,7 +225,23 @@ function World:update(dt)
 	
 end
 
-function World:draw(z)
+function World:world_to_chunk(x, y)
+
+	local c_x = math.floor(x / World.chunk_size)+1
+	local c_y = math.floor(y / World.chunk_size)+1
+	local o_x = (x % World.chunk_size)+1
+	local o_y = (y % World.chunk_size)+1
+
+	return c_x, c_y, o_x, o_y
+
+end
+
+function World:draw(view_pos, z)
+
+	-- given view position, cull chunks from drawing
+	local upper_left, upper_right, lower_left, lower_right = screen_edges_to_world()
+	upper_left_cx, upper_left_cy = self:world_to_chunk(upper_left[1], upper_left[2])
+	lower_right_cx, lower_right_cy = self:world_to_chunk(lower_right[1], lower_right[2])
 
 	local lg = love.graphics
 	lg.push()
@@ -240,10 +258,7 @@ end
 
 function World:block(x, y, z)
 
-	local c_x = math.floor(x / World.chunk_size)+1
-	local c_y = math.floor(y / World.chunk_size)+1
-	local o_x = (x % World.chunk_size)+1
-	local o_y = (y % World.chunk_size)+1
+	local c_x, c_y, o_x, o_y = self:world_to_chunk(x, y)
 
 	return self.chunks[c_y][c_x].blocks[o_y][z][o_x]
 
@@ -251,10 +266,8 @@ end
 
 function World:set_block(x, y, z, v)
 
-	local c_x = math.floor(x / World.chunk_size)+1
-	local c_y = math.floor(y / World.chunk_size)+1
-	local o_x = (x % World.chunk_size)+1
-	local o_y = (y % World.chunk_size)+1
+	local c_x, c_y, o_x, o_y = self:world_to_chunk(x, y)
+
 	self.chunks[c_y][c_x].blocks[o_y][z][o_x] = v
 	self.chunks[c_y][c_x].dirty = true
 
@@ -272,10 +285,7 @@ function World:add_entity(new_tile_entity)
 
 	local pos = new_tile_entity.position
 	local x, y, z = pos.x, pos.y, pos.z
-	local c_x = math.floor(x / World.chunk_size)+1
-	local c_y = math.floor(y / World.chunk_size)+1
-	local o_x = (x % World.chunk_size)+1
-	local o_y = (y % World.chunk_size)+1
+	local c_x, c_y, o_x, o_y = self:world_to_chunk(x, y)
 
 	-- use a table to represent all tile entities at given position
 	local chunk = self.chunks[c_x][c_y]

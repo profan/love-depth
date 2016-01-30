@@ -57,6 +57,7 @@ local color_blue =	{30, 144, 255} -- dodger blue
 local chunk_height = 128
 
 function setup_game()
+
 	screen_w = love.graphics.getWidth()
 	screen_h = love.graphics.getHeight()
 
@@ -132,15 +133,33 @@ function draw_debug()
 	lg.print("Under Mouse World X:" .. v_x, 0, 164)
 	lg.print("Under Mouse World Y:" .. v_y, 0, 180)
 	lg.pop()
+
 end
 
 function draw_world()
-	world:draw(zoom_level)
+	world:draw(cam:pos(), zoom_level)
 end
 
 function draw_highlight()
 	local x, y = world_to_grid(cam:worldCoords(love.mouse.getPosition()))
-	love.graphics.draw(spritesheet, blocks[4], x, y)
+	love.graphics.draw(spritesheet, blocks[4], x, y) -- FIXME: get rid of this awful hard coded thing D; globals die
+end
+
+function pack(...)
+	return {...}
+end
+
+function screen_edges_to_world()
+
+	local x, y = cam:pos()
+	local w, h = love.graphics.getWidth(), love.graphics.getHeight()
+	local upper_left = pack(cam:worldCoords(x - w/2, y - h/2))
+	local upper_right = pack(cam:worldCoords(x + w/2, y - h/2))
+	local lower_left = pack(cam:worldCoords(x - w/2, y + h/2))
+	local lower_right = pack(cam:worldCoords(x + w/2, y + h/2))
+
+	return upper_left, upper_right, lower_left, lower_right
+
 end
 
 function world_to_grid(x, y)
