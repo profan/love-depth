@@ -1,6 +1,8 @@
 love-depth
 =================================
 
+![a chunk](blocky.png "A Single Chunk")
+
 Chunk based isometric world library for LÖVE, for those foolish enough to want to try and make their game world happen in three dimensions.
 
 Requirements

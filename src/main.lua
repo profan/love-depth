@@ -163,14 +163,17 @@ function screen_edges_to_world()
 end
 
 function world_to_grid(x, y)
+
 	local m = math.floor(y / tile_height - (x-(tile_width/2)) / tile_width)
 	local n = math.floor(y / tile_height + (x-(tile_width/2)) / tile_width)
 	local n_x = ((n - m) / 2 * tile_width)
 	local n_y = ((n + m) / 2 * tile_height)
+
 	return n_x, n_y
+
 end
 
-wait_time = 0
+wait_time = 0 -- FIXME: remove this shit
 function explode()
 	for x = 1, 64 do
 		for y = 1, 64 do
